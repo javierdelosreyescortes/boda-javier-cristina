@@ -128,15 +128,15 @@ export default function App() {
   ];
 
   const storyTimeline = [
-    { year: "2018", title: "Donde todo empezó", desc: "Nuestros primeros momentos juntos compartiendo sonrisas e ilusiones.", img: REAL_PHOTOS["2018"], rotate: "-rotate-3" },
+    { year: "2018", title: "Donde todo empezó", desc: "Nuestros primeros momentos juntos compartiendo sonrisas e ilusiones.", img: REAL_PHOTOS["2018"], rotate: "-rotate-2" },
     { year: "2019", title: "Risas compartidas", desc: "Inseparables desde las pequeñas escapadas nocturnas hasta las grandes aventuras.", img: REAL_PHOTOS["2019"], rotate: "rotate-2" },
     { year: "2020", title: "Sueños en París", desc: "Construyendo recuerdos románticos y fortaleciendo nuestra complicidad.", img: REAL_PHOTOS["2020"], rotate: "-rotate-2" },
-    { year: "2021", title: "Primavera & Amor", desc: "Cada primavera a tu lado florece de una forma mágica y especial.", img: REAL_PHOTOS["2021"], rotate: "rotate-3" },
-    { year: "2022", title: "Viajes e Historias", desc: "Explorando la arquitectura de ciudades históricas y disfrutando de fiestas inolvidables.", img: REAL_PHOTOS["2022_1"], rotate: "-rotate-3" },
+    { year: "2021", title: "Primavera & Amor", desc: "Cada primavera a tu lado florece de una forma mágica y especial.", img: REAL_PHOTOS["2021"], rotate: "rotate-2" },
+    { year: "2022", title: "Viajes e Historias", desc: "Explorando la arquitectura de ciudades históricas y disfrutando de fiestas inolvidables.", img: REAL_PHOTOS["2022_1"], rotate: "-rotate-2" },
     { year: "2023", title: "Celebrando la vida", desc: "Cenas elegantes, brindis y momentos que guardamos para siempre.", img: REAL_PHOTOS["2023"], rotate: "rotate-2" },
     { year: "2024", title: "Tardes al sol", desc: "Disfrutando de la compañía mutua entre cañas, terrazas y buenos amigos.", img: REAL_PHOTOS["2024"], rotate: "-rotate-2" },
-    { year: "2025", title: "¡El Gran SÍ!", desc: "La promesa de un camino juntos para toda la vida.", img: REAL_PHOTOS["2025"], rotate: "rotate-3" },
-    { year: "2026", title: "Rumbo a la boda", desc: "Preparando con ilusión el día más bonito de nuestras vidas.", img: REAL_PHOTOS["2026"], rotate: "-rotate-3" }
+    { year: "2025", title: "¡El Gran SÍ!", desc: "La promesa de un camino juntos para toda la vida.", img: REAL_PHOTOS["2025"], rotate: "rotate-2" },
+    { year: "2026", title: "Rumbo a la boda", desc: "Preparando con ilusión el día más bonito de nuestras vidas.", img: REAL_PHOTOS["2026"], rotate: "-rotate-2" }
   ];
 
   const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
@@ -423,8 +423,8 @@ export default function App() {
           </div>
         </section>
 
-        {/* NUESTRA HISTORIA ESTILO POLAROID */}
-        <section className="py-20 px-4 sm:px-6 max-w-4xl mx-auto">
+        {/* NUESTRA HISTORIA ESTILO POLAROID (EN PARALELO 2 A 2) */}
+        <section className="py-20 px-4 sm:px-6 max-w-5xl mx-auto">
           <RevealOnScroll>
             <div className="text-center mb-16 space-y-2">
               <h2 className="text-5xl sm:text-6xl font-autography text-[#8B3A44] py-1">Nuestra historia</h2>
@@ -434,14 +434,15 @@ export default function App() {
             </div>
           </RevealOnScroll>
 
-          <div className="space-y-16 sm:space-y-24 max-w-md mx-auto">
+          {/* GRID PARALELO DE 2 COLUMNAS EN PANTALLAS SM/MD EN ADELANTE */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 sm:gap-12 lg:gap-16 items-start">
             {storyTimeline.map((item, index) => (
-              <RevealOnScroll key={index} delay={index * 100}>
+              <RevealOnScroll key={index} delay={(index % 2) * 150}>
                 <div className="flex flex-col items-center text-center">
                   
                   <div 
                     onClick={() => setSelectedImage(item)}
-                    className={`group cursor-pointer bg-white p-3.5 sm:p-4 pt-3.5 pb-5 shadow-2xl hover:shadow-[0_20px_50px_rgba(0,0,0,0.2)] transition-all duration-500 transform ${item.rotate} hover:rotate-0 hover:scale-105 rounded-xs max-w-xs sm:max-w-sm w-full border border-stone-200/60`}
+                    className={`group cursor-pointer bg-white p-3.5 sm:p-4 pt-3.5 pb-5 shadow-xl hover:shadow-[0_20px_50px_rgba(0,0,0,0.2)] transition-all duration-500 transform ${item.rotate} hover:rotate-0 hover:scale-105 rounded-xs w-full max-w-xs border border-stone-200/60`}
                   >
                     <div className="aspect-[3/4] w-full overflow-hidden bg-stone-100 rounded-2xs">
                       <img 
@@ -452,7 +453,7 @@ export default function App() {
                     </div>
                   </div>
 
-                  <div className="mt-5 space-y-1">
+                  <div className="mt-4 space-y-1">
                     <span className="text-3xl sm:text-4xl font-autography text-[#8B3A44] block">
                       {item.year}
                     </span>
@@ -558,14 +559,14 @@ export default function App() {
           </RevealOnScroll>
         </section>
 
-        {/* SECCIÓN DE MÚSICA CON FONDO DISCO */}
+        {/* SECCIÓN DE MÚSICA CON SPOTIFY Y GOOGLE FORMS */}
         <section 
           className="py-24 px-4 sm:px-6 relative bg-cover bg-center bg-no-repeat text-white overflow-hidden"
           style={{ backgroundImage: "url('/FondoDisco.jpg')" }}
         >
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] z-0" />
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] z-0" />
 
-          <div className="relative z-10 max-w-4xl mx-auto text-center">
+          <div className="relative z-10 max-w-6xl mx-auto text-center">
             <RevealOnScroll>
               <Disc className="w-10 h-10 text-[#1DB954] mx-auto mb-3 animate-spin-slow drop-shadow-[0_0_10px_rgba(29,185,84,0.8)]" />
               <span className="text-[#1DB954] font-sans text-xs uppercase tracking-[0.25em] font-bold block mb-2 drop-shadow">
@@ -574,36 +575,63 @@ export default function App() {
               <h2 className="text-5xl sm:text-6xl font-autography text-white py-1 drop-shadow-md">
                 ¿Qué canción no puede faltar?
               </h2>
-              <p className="text-stone-200 font-sans text-sm max-w-lg mx-auto mt-2 mb-10 drop-shadow-sm">
-                Queremos que la fiesta sea inolvidable. Explora la lista oficial de reproducción o añade tus canciones favoritas.
+              <p className="text-stone-200 font-sans text-sm max-w-xl mx-auto mt-2 mb-10 drop-shadow-sm">
+                Queremos que la fiesta sea inolvidable. Explora la lista oficial en Spotify o sugiere tus temas mediante el formulario.
               </p>
             </RevealOnScroll>
 
             <RevealOnScroll delay={150}>
-              <div className="bg-stone-900/80 backdrop-blur-md p-4 sm:p-6 rounded-3xl shadow-2xl border border-white/20 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
                 
-                <iframe 
-                  style={{ borderRadius: "16px" }} 
-                  src="https://open.spotify.com/embed/playlist/0p1CNvzdhUzIfFiT6lZ325?utm_source=generator&si=36b6f464ed444ea2" 
-                  width="100%" 
-                  height="500" 
-                  frameBorder="0" 
-                  allowFullScreen="" 
-                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-                  loading="lazy"
-                  title="Playlist de Boda Spotify"
-                ></iframe>
+                {/* COLUMNA IZQUIERDA: REPRODUCTOR Y BOTÓN SPOTIFY */}
+                <div className="bg-stone-900/80 backdrop-blur-md p-4 sm:p-6 rounded-3xl shadow-2xl border border-white/20 flex flex-col justify-between space-y-4">
+                  <h3 className="font-sans text-xs uppercase tracking-widest font-bold text-[#1DB954]">
+                    Lista Oficial en Spotify
+                  </h3>
+                  
+                  <iframe 
+                    style={{ borderRadius: "16px" }} 
+                    src="https://open.spotify.com/embed/playlist/0p1CNvzdhUzIfFiT6lZ325?utm_source=generator&si=36b6f464ed444ea2" 
+                    width="100%" 
+                    height="480" 
+                    frameBorder="0" 
+                    allowFullScreen="" 
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                    loading="lazy"
+                    title="Playlist de Boda Spotify"
+                  ></iframe>
 
-                <div className="pt-2 flex flex-col sm:flex-row gap-3 justify-center items-center font-sans">
                   <a 
                     href="https://open.spotify.com/playlist/0p1CNvzdhUzIfFiT6lZ325?si=12d0cc5f957c472b&pt=16614db570cbb824c48162536ac5a8ed" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="w-full sm:w-auto bg-[#1DB954] hover:bg-[#1AA34A] text-white py-3.5 px-6 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-lg hover:scale-[1.02]"
+                    className="w-full bg-[#1DB954] hover:bg-[#1AA34A] text-white py-3.5 px-4 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-lg hover:scale-[1.02]"
                   >
                     <PlusCircle className="w-4 h-4" /> Añadir Canciones en Spotify <ExternalLink className="w-3.5 h-3.5 opacity-80" />
                   </a>
                 </div>
+
+                {/* COLUMNA DERECHA: FORMULARIO GOOGLE FORMS */}
+                <div className="bg-stone-900/80 backdrop-blur-md p-4 sm:p-6 rounded-3xl shadow-2xl border border-white/20 flex flex-col justify-between space-y-4">
+                  <h3 className="font-sans text-xs uppercase tracking-widest font-bold text-[#E28351]">
+                    ¿Sin Spotify? Pide tu canción aquí
+                  </h3>
+
+                  <div className="w-full h-[530px] rounded-2xl overflow-hidden bg-white/5 border border-white/10">
+                    <iframe 
+                      src="https://docs.google.com/forms/d/e/1FAIpQLSfEiw3Irv_evcLrYdgqNh1vEN9lhWgIVGydTkiC6FhAupEoVw/viewform?embedded=true" 
+                      width="100%" 
+                      height="100%" 
+                      frameBorder="0" 
+                      marginHeight="0" 
+                      marginWidth="0"
+                      title="Sugerir canción sin Spotify"
+                    >
+                      Cargando…
+                    </iframe>
+                  </div>
+                </div>
+
               </div>
             </RevealOnScroll>
           </div>
@@ -646,7 +674,7 @@ export default function App() {
           <RevealOnScroll delay={150}>
             <div className="space-y-4 font-sans">
               
-{/* DESPLEGABLE 1: HOTELES Y ALOJAMIENTOS */}
+              {/* DESPLEGABLE 1: HOTELES Y ALOJAMIENTOS */}
               <div className="bg-white rounded-2xl border border-[#D1C3B3] shadow-sm overflow-hidden transition-all">
                 <button 
                   onClick={() => toggleAccordion(0)}
