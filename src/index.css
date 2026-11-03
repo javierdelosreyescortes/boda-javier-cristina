@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'Autography';
+  src: url('/Autography.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-autography {
+  font-family: 'Autography', cursive, Georgia, serif;
+}
+
+/* Perspectiva 3D para la apertura del sobre */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+/* Transiciones de revelado al hacer scroll */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* Animación de extracción de la carta fuera del sobre */
+@keyframes cardSlideUp {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-85%);
+  }
+}
+
+.animate-card-slide-up {
+  animation: cardSlideUp 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
