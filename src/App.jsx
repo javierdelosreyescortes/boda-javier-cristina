@@ -55,7 +55,23 @@ export default function App() {
   const [copied, setCopied] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [activeAccordion, setActiveAccordion] = useState(null);
-  
+  const [showQuickNav, setShowQuickNav] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 380) {
+        setShowQuickNav(true);
+      } else {
+        setShowQuickNav(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToSection = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  };
   const audioRef = useRef(null);
   const [timeLeft, setTimeLeft] = useState({ días: 0, horas: 0, minutos: 0, segundos: 0 });
 
@@ -397,6 +413,46 @@ export default function App() {
         >
           {isPlaying ? <Volume2 className="w-5 h-5 animate-pulse" /> : <VolumeX className="w-5 h-5" />}
         </button>
+		{/* BARRA DE NAVEGACIÓN RÁPIDA FLOTANTE (APARECE AL HACER SCROLL) */}
+        <nav
+          aria-label="Navegación rápida"
+          className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ${
+            showQuickNav && step >= 1
+              ? 'opacity-100 translate-y-0 pointer-events-auto'
+              : 'opacity-0 -translate-y-6 pointer-events-none'
+          }`}
+        >
+          <div className="flex items-center gap-1 sm:gap-2 px-2.5 py-1.5 rounded-full bg-[#FAF6F0]/90 backdrop-blur-md border border-[#D1C3B3] shadow-[0_8px_24px_rgba(46,43,42,0.12)] font-sans text-[11px] sm:text-xs">
+            <button
+              type="button"
+              onClick={() => scrollToSection('itinerario')}
+              className="px-2.5 py-1.5 rounded-full text-[#4A4543] hover:text-[#6B2028] hover:bg-[#E8DED1]/50 font-medium transition-colors"
+            >
+              Horario
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollToSection('ubicacion')}
+              className="px-2.5 py-1.5 rounded-full text-[#4A4543] hover:text-[#6B2028] hover:bg-[#E8DED1]/50 font-medium transition-colors"
+            >
+              Ubicación
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollToSection('info')}
+              className="px-2.5 py-1.5 rounded-full text-[#4A4543] hover:text-[#6B2028] hover:bg-[#E8DED1]/50 font-medium transition-colors"
+            >
+              Info
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollToSection('confirmar')}
+              className="px-3.5 py-1.5 rounded-full bg-[#6B2028] hover:bg-[#52171D] text-[#FFFDF9] font-semibold shadow-sm transition-all"
+            >
+              Confirmar
+            </button>
+          </div>
+        </nav>
 
         {/* HEADER CON FOTO DE FONDO INTEGRADA EN EL PAPEL */}
           <header className="relative min-h-screen flex flex-col justify-center items-center text-center p-4 sm:p-6 overflow-hidden">
@@ -466,6 +522,14 @@ export default function App() {
                     <Calendar className="w-4 h-4 text-[#FFE8A3] group-hover:scale-110 transition-transform" />
                     <span>Añadir a Google Calendar</span>
                   </a>
+				  <button
+                    type="button"
+                    onClick={() => scrollToSection('confirmar')}
+                    className="flex items-center justify-center gap-2 bg-[#788E75] hover:bg-[#627760] text-[#FFFDF9] px-5 py-2.5 rounded-full border border-[#788E75] shadow-sm transition-all text-sm font-semibold group cursor-pointer"
+                  >
+                    <UserCheck className="w-4 h-4 text-[#FFFDF9] group-hover:scale-110 transition-transform" />
+                    <span>Confirmar asistencia</span>
+                  </button>
                 </div>
               </RevealOnScroll>
 
@@ -559,6 +623,13 @@ export default function App() {
             </div>
           </div>
         </section>
+		
+		{/* DIVISOR ORGÁNICO SUTIL ENTRE SECCIONES DE PAPEL */}
+        <div className="flex items-center justify-center gap-3 py-2 opacity-55">
+          <span className="h-[1px] w-16 sm:w-24 bg-gradient-to-r from-transparent to-[#788E75]" />
+          <Sparkles className="w-4 h-4 text-[#788E75]" />
+          <span className="h-[1px] w-16 sm:w-24 bg-gradient-to-l from-transparent to-[#788E75]" />
+        </div>
 
         {/* NUESTRA HISTORIA ESTILO POLAROID (EN PARALELO 2 A 2) */}
         <section className="py-20 px-4 sm:px-6 max-w-5xl mx-auto">
@@ -628,14 +699,16 @@ export default function App() {
           </div>
         )}
 
-        {/* SECCIÓN DE MÚSICA CON SPOTIFY Y GOOGLE FORMS */}
-        <section 
-          className="py-24 px-4 sm:px-6 relative bg-cover bg-center bg-no-repeat text-white overflow-hidden"
-          style={{ backgroundImage: "url('/FondoDisco.jpg')" }}
-        >
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] z-0" />
+{/* SECCIÓN DE MÚSICA CON SPOTIFY Y GOOGLE FORMS (ENMARCADA COMO TARJETA SOBRE EL PAPEL) */}
+        <section className="py-12 px-4 sm:px-6 max-w-6xl mx-auto">
+          <div
+            className="relative py-16 sm:py-20 px-4 sm:px-8 rounded-[32px] bg-cover bg-center bg-no-repeat text-white overflow-hidden shadow-[0_20px_50px_rgba(46,43,42,0.18)] border border-[#D1C3B3]"
+            style={{ backgroundImage: "url('/FondoDisco.jpg')" }}
+          >
+            <div className="absolute inset-0 bg-black/55 backdrop-blur-[2px] z-0" />
 
-          <div className="relative z-10 max-w-6xl mx-auto text-center">
+            <div className="relative z-10 max-w-5xl mx-auto text-center">
+			
             <RevealOnScroll>
               <Disc className="w-10 h-10 text-[#1DB954] mx-auto mb-3 animate-spin-slow drop-shadow-[0_0_10px_rgba(29,185,84,0.8)]" />
               <span className="text-[#1DB954] font-sans text-xs uppercase tracking-[0.25em] font-bold block mb-2 drop-shadow">
@@ -703,11 +776,17 @@ export default function App() {
 
               </div>
             </RevealOnScroll>
+         </div>
           </div>
         </section>
-
-        {/* UBICACIÓN */}
-        <section className="py-20 px-6 bg-[#E8DED1]/40">
+		{/* DIVISOR ORGÁNICO SUTIL ENTRE SECCIONES DE PAPEL */}
+        <div className="flex items-center justify-center gap-3 py-2 opacity-55">
+          <span className="h-[1px] w-16 sm:w-24 bg-gradient-to-r from-transparent to-[#788E75]" />
+          <Sparkles className="w-4 h-4 text-[#788E75]" />
+          <span className="h-[1px] w-16 sm:w-24 bg-gradient-to-l from-transparent to-[#788E75]" />
+        </div>
+{/* UBICACIÓN */}
+        <section id="ubicacion" className="py-20 px-6 bg-gradient-to-b from-transparent via-[#E8DED1]/45 to-transparent">
           <div className="max-w-4xl mx-auto text-center">
             <RevealOnScroll>
               <MapPin className="w-8 h-8 text-[#7998B5] mx-auto mb-3" />
@@ -728,9 +807,15 @@ export default function App() {
             </RevealOnScroll>
           </div>
         </section>
+		{/* DIVISOR ORGÁNICO SUTIL ENTRE SECCIONES DE PAPEL */}
+        <div className="flex items-center justify-center gap-3 py-2 opacity-55">
+          <span className="h-[1px] w-16 sm:w-24 bg-gradient-to-r from-transparent to-[#788E75]" />
+          <Sparkles className="w-4 h-4 text-[#788E75]" />
+          <span className="h-[1px] w-16 sm:w-24 bg-gradient-to-l from-transparent to-[#788E75]" />
+        </div>
 
         {/* INFORMACIÓN DE INTERÉS (DESPLEGABLES: MENÚ, HOTELES, AUTOBUSES, PARKING) */}
-        <section className="py-20 px-4 sm:px-6 max-w-3xl mx-auto">
+        <section id="info" className="py-20 px-4 sm:px-6 max-w-3xl mx-auto">
           <RevealOnScroll>
             <div className="text-center mb-12">
               <Info className="w-8 h-8 text-[#7998B5] mx-auto mb-3" />
@@ -1012,9 +1097,15 @@ export default function App() {
             </div>
           </RevealOnScroll>
         </section>
+		{/* DIVISOR ORGÁNICO SUTIL ENTRE SECCIONES DE PAPEL */}
+        <div className="flex items-center justify-center gap-3 py-2 opacity-55">
+          <span className="h-[1px] w-16 sm:w-24 bg-gradient-to-r from-transparent to-[#788E75]" />
+          <Sparkles className="w-4 h-4 text-[#788E75]" />
+          <span className="h-[1px] w-16 sm:w-24 bg-gradient-to-l from-transparent to-[#788E75]" />
+        </div>
 
         {/* FORMULARIO RSVP OFICIAL DE GOOGLE FORMS */}
-        <section className="py-20 px-4 sm:px-6 max-w-3xl mx-auto text-center">
+        <section id="confirmar" className="py-20 px-4 sm:px-6 max-w-3xl mx-auto text-center">
           <RevealOnScroll>
             <UserCheck className="w-10 h-10 text-[#E28351] mx-auto mb-3" />
             <h2 className="text-5xl sm:text-6xl font-autography text-[#2E2B2A] mb-2 py-1">Confirmar Asistencia</h2>
@@ -1036,6 +1127,12 @@ export default function App() {
             </div>
           </RevealOnScroll>
         </section>
+		{/* DIVISOR ORGÁNICO SUTIL ENTRE SECCIONES DE PAPEL */}
+        <div className="flex items-center justify-center gap-3 py-2 opacity-55">
+          <span className="h-[1px] w-16 sm:w-24 bg-gradient-to-r from-transparent to-[#788E75]" />
+          <Sparkles className="w-4 h-4 text-[#788E75]" />
+          <span className="h-[1px] w-16 sm:w-24 bg-gradient-to-l from-transparent to-[#788E75]" />
+        </div>
 
         {/* REGALO DE BODA (AL FINAL DEL TODO) */}
         <section className="py-20 px-6 max-w-2xl mx-auto text-center">
