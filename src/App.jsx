@@ -171,7 +171,7 @@ if (audioRef.current) {
 
   return (
     <div className="min-h-screen bg-[#F8F6F0] text-[#4A4543] font-serif antialiased selection:bg-[#B64A4A]/20 overflow-x-hidden">
-<audio ref={audioRef} src="public/musica.mp3" loop />
+<audio ref={audioRef} src="/musica.mp3" loop />
 
      {/* PANTALLA INICIAL DEL SOBRE (BORDES Y SOLAPAS SUAVIZADOS + APERTURA PAUSADA) */}
       {step < 2 && (
