@@ -890,13 +890,7 @@ export default function App() {
                     </div>
 
                     <div className="mt-6">
-                      <button 
-                        onClick={() => window.print()} 
-                        className="bg-[#6e806d] text-white px-6 py-2.5 rounded-full font-sans text-xs tracking-widest uppercase hover:bg-[#9e4a47] transition-all inline-flex items-center gap-2 shadow-sm"
-                      >
-                        <Printer className="w-4 h-4" />
-                        Imprimir / Guardar en PDF
-                      </button>
+
                     </div>
                   </div>
                 )}
