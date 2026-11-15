@@ -52,11 +52,18 @@ function RevealOnScroll({ children, className = "", delay = 0 }) {
 export default function App() {
   const [step, setStep] = useState(0); 
   const [isPlaying, setIsPlaying] = useState(false);
+  const [volume, setVolume] = useState(0.1); // 40% inicial
   const [copied, setCopied] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [activeAccordion, setActiveAccordion] = useState(null);
   const [showQuickNav, setShowQuickNav] = useState(false);
-
+const handleVolumeChange = (e) => {
+    const newVolume = parseFloat(e.target.value);
+    setVolume(newVolume);
+    if (audioRef.current) {
+      audioRef.current.volume = newVolume;
+    }
+  };
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 380) {
@@ -99,7 +106,8 @@ export default function App() {
     
     setStep(1);
 
-    if (audioRef.current) {
+if (audioRef.current) {
+      audioRef.current.volume = 0.1; // Volumen inicial al 20%
       audioRef.current.play().then(() => {
         setIsPlaying(true);
       }).catch(err => console.log("Audio autoplay prevenido:", err));
@@ -163,7 +171,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#F8F6F0] text-[#4A4543] font-serif antialiased selection:bg-[#B64A4A]/20 overflow-x-hidden">
-<audio ref={audioRef} src="/musica.mp3" loop />
+<audio ref={audioRef} src="public/musica.mp3" loop />
 
      {/* PANTALLA INICIAL DEL SOBRE (BORDES Y SOLAPAS SUAVIZADOS + APERTURA PAUSADA) */}
       {step < 2 && (
@@ -406,13 +414,33 @@ export default function App() {
           }}
         />
 
-        <button 
-          onClick={toggleAudio} 
-          className="fixed bottom-6 right-6 z-50 bg-[#7998B5] text-white p-3.5 rounded-full shadow-xl hover:bg-[#63809C] transition-all flex items-center gap-2"
-          title={isPlaying ? "Pausar música" : "Reproducir música"}
-        >
-          {isPlaying ? <Volume2 className="w-5 h-5 animate-pulse" /> : <VolumeX className="w-5 h-5" />}
-        </button>
+{/* CONTROL DE MÚSICA Y VOLUMEN FLOTANTE */}
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 bg-[#6B2028]/95 backdrop-blur-md text-[#FFFDF9] px-3.5 py-2.5 rounded-full shadow-xl border border-[#D4AF6A]/60 transition-all group">
+          <button 
+            type="button"
+            onClick={toggleAudio} 
+            className="flex items-center justify-center hover:scale-105 transition-transform cursor-pointer"
+            title={isPlaying ? "Pausar música" : "Reproducir música"}
+          >
+            {isPlaying && volume > 0 ? (
+              <Volume2 className="w-5 h-5 text-[#FFE8A3] animate-pulse" />
+            ) : (
+              <VolumeX className="w-5 h-5 text-[#FFFDF9]/80" />
+            )}
+          </button>
+
+          {/* Barra deslizante visible en escritorio o al pasar/tocar el botón */}
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.05"
+            value={volume}
+            onChange={handleVolumeChange}
+            aria-label="Volumen de la música"
+            className="w-16 sm:w-20 h-1 bg-[#FFFDF9]/30 rounded-lg appearance-none cursor-pointer accent-[#FFE8A3]"
+          />
+        </div>
 		{/* BARRA DE NAVEGACIÓN RÁPIDA FLOTANTE (APARECE AL HACER SCROLL) */}
         <nav
           aria-label="Navegación rápida"
