@@ -397,9 +397,9 @@ export default function App() {
       <div className={`relative transition-opacity duration-500 ${step >= 1 ? 'opacity-100' : 'opacity-0'}`}>
 {/* TEXTURA REAL DE PAPEL CARTA (SIN CORTES AL HACER SCROLL EN MÓVIL) */}
         <div
-          className="pointer-events-none fixed top-0 left-0 w-screen h-[120lvh] z-0 opacity-15 mix-blend-multiply transform-gpu will-change-transform"
+          className="pointer-events-none fixed top-0 left-0 w-screen h-[120lvh] z-0 opacity-20 mix-blend-multiply transform-gpu will-change-transform"
           style={{
-            backgroundImage: "url('/texturacarta.png')",
+            backgroundImage: "url('/texturacarta_1.jpg')",
             backgroundSize: 'cover',
             backgroundPosition: 'center top',
             backgroundRepeat: 'no-repeat'
