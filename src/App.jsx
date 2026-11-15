@@ -91,7 +91,7 @@ export default function App() {
 
     setTimeout(() => {
       setStep(1.5);
-    }, 600);
+    }, 1500);
 
     setTimeout(() => {
       setStep(2);
@@ -147,144 +147,249 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#F8F6F0] text-[#4A4543] font-serif antialiased selection:bg-[#B64A4A]/20 overflow-x-hidden">
-      <audio ref={audioRef} src="/musica.mp3" loop />
+<audio ref={audioRef} src="/musica.mp3" loop />
 
-      {/* FILTROS DE TEXTURA PARA EL SOBRE */}
-      <svg className="hidden">
-        <defs>
-          <filter id="paperTexture" x="0%" y="0%" width="100%" height="100%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="4" result="noise" />
-            <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.15 0" in="noise" result="coloredNoise" />
-            <feComposite operator="in" in="coloredNoise" in2="SourceGraphic" result="compositeNoise" />
-            <feBlend mode="multiply" in="SourceGraphic" in2="compositeNoise" />
-          </filter>
-        </defs>
-      </svg>
-
-      {/* PANTALLA INICIAL DEL SOBRE */}
+     {/* PANTALLA INICIAL DEL SOBRE (BORDES Y SOLAPAS SUAVIZADOS + APERTURA PAUSADA) */}
       {step < 2 && (
-        <div 
-          className={`fixed inset-0 z-50 w-full h-full bg-[#2A090C] overflow-hidden flex items-center justify-center transition-opacity duration-700 ${
-            step === 1.5 ? 'opacity-90' : step === 2 ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        <div
+          className={`fixed inset-0 z-50 w-full h-full bg-[#1C1815] p-2.5 sm:p-5 overflow-hidden flex items-center justify-center transition-opacity duration-1000 delay-500 ${
+            step >= 1 ? 'opacity-0 pointer-events-none' : 'opacity-100'
           }`}
         >
-          <div className="relative w-full h-full max-w-xl sm:max-w-2xl max-h-[100vh] flex items-center justify-center [perspective:1200px]">
+          <div className="relative w-full h-full max-w-md sm:max-w-lg max-h-[100dvh] rounded-[28px] sm:rounded-[36px] flex items-center justify-center shadow-[0_25px_70px_rgba(0,0,0,0.9)] border border-white/10 overflow-hidden [perspective:1500px]">
             
-            <div className="absolute inset-0 bg-[#1F0507] [filter:url(#paperTexture)]" />
+            {/* FONDO INTERIOR DEL SOBRE */}
+            <div className="absolute inset-0 bg-[#3B332B]" />
 
-            {/* TARJETA INTERIOR */}
-            <div 
-              className={`absolute inset-x-5 sm:inset-x-10 top-12 bottom-12 bg-[#FFFDF9] rounded-xl shadow-inner p-6 sm:p-10 text-center border border-[#D1C3B3] flex flex-col justify-between z-10 transition-all duration-700 ${
-                step >= 1.5 ? 'animate-card-slide-up shadow-2xl z-35' : ''
-              }`}
+            {/* CAPA DE SOLAPAS BASE: 1. SUPERIOR, 2. INFERIOR, 3. DERECHA */}
+            <svg
+              className="absolute inset-0 w-full h-full z-20 pointer-events-none"
+              preserveAspectRatio="none"
+              viewBox="0 0 100 100"
             >
-              <div className="space-y-3 mt-4">
-                <span className="text-[#6B2028] font-serif text-xs uppercase tracking-[0.3em] font-bold block">
-                  NUESTRA BODA
-                </span>
-                <h2 className="text-4xl sm:text-6xl font-autography text-[#6B2028]">
-                  Javier & Cristina
-                </h2>
-
-                <div className="w-32 sm:w-44 mx-auto my-1">
-                  <img 
-                    src="/iconopersonas.png" 
-                    alt="Javier y Cristina" 
-                    className="w-full h-auto object-contain drop-shadow-sm" 
-                  />
-                </div>
-
-                <div className="w-12 h-0.5 bg-[#B64A4A] mx-auto my-2" />
-                <p className="text-xs sm:text-sm font-serif uppercase tracking-widest text-[#788E75] font-semibold">
-                  24 DE ABRIL DE 2027
-                </p>
-                <p className="text-xs font-sans italic text-[#8C827A]">
-                  Finca Un Agua
-                </p>
-              </div>
-
-              <div className="mb-4">
-                <p className="text-xs font-serif text-[#6B6461] italic max-w-sm mx-auto">
-                  "Nos encantaría que nos acompañaras en el día más importante de nuestras vidas."
-                </p>
-              </div>
-            </div>
-
-            {/* SOLAPAS DEL SOBRE */}
-            <svg className="absolute inset-0 w-full h-full z-20 pointer-events-none [filter:url(#paperTexture)]" preserveAspectRatio="none" viewBox="0 0 100 100">
               <defs>
-                <linearGradient id="leftFlapGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#5B181E" />
-                  <stop offset="100%" stopColor="#3E0F14" />
+                <pattern
+                  id="originalPaperTexture"
+                  patternUnits="userSpaceOnUse"
+                  width="100"
+                  height="100"
+                >
+                  <image
+                    href="/texturasobre.jpg"
+                    x="0"
+                    y="0"
+                    width="100"
+                    height="100"
+                    preserveAspectRatio="xMidYMid slice"
+                  />
+                </pattern>
+
+                {/* Sombra suave en la solapa superior */}
+                <linearGradient id="creaseShadowTop" x1="50%" y1="0%" x2="50%" y2="45%">
+                  <stop offset="0%" stopColor="#000000" stopOpacity="0.06" />
+                  <stop offset="100%" stopColor="#000000" stopOpacity="0.24" />
                 </linearGradient>
-                <linearGradient id="rightFlapGrad" x1="100%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#5B181E" />
-                  <stop offset="100%" stopColor="#3E0F14" />
+
+                {/* Sombra profunda en el triángulo inferior (efecto pliegue hundido) */}
+                <linearGradient id="creaseShadowBottom" x1="50%" y1="53%" x2="50%" y2="100%">
+                  <stop offset="0%" stopColor="#000000" stopOpacity="0.46" />
+                  <stop offset="45%" stopColor="#000000" stopOpacity="0.30" />
+                  <stop offset="100%" stopColor="#000000" stopOpacity="0.16" />
                 </linearGradient>
-                <linearGradient id="bottomFlapGrad" x1="50%" y1="100%" x2="50%" y2="0%">
-                  <stop offset="0%" stopColor="#681C23" />
-                  <stop offset="100%" stopColor="#411015" />
+
+                {/* Sombra lateral en la solapa derecha */}
+                <linearGradient id="creaseShadowRight" x1="100%" y1="30%" x2="42%" y2="70%">
+                  <stop offset="0%" stopColor="#000000" stopOpacity="0.04" />
+                  <stop offset="100%" stopColor="#000000" stopOpacity="0.20" />
                 </linearGradient>
-                <filter id="bottomShadow" x="-10%" y="-10%" width="130%" height="130%">
-                  <feDropShadow dx="0" dy="-3" stdDeviation="4" floodColor="#000" floodOpacity="0.6"/>
+				<filter id="bottomRightEdgeShadow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="0.9" />
                 </filter>
               </defs>
 
-              <polygon points="0,0 0,100 50,52" fill="url(#leftFlapGrad)" />
-              <polygon points="100,0 100,100 50,52" fill="url(#rightFlapGrad)" />
-              <polygon points="0,100 100,100 50,50" fill="url(#bottomFlapGrad)" filter="url(#bottomShadow)" />
-            </svg>
+              {/* 1. SOLAPA SUPERIOR */}
+              <g style={{ filter: 'drop-shadow(10px 10px 10px rgba(0, 0, 0, 0.58))' }}>
+                <path
+                  d="M 6,-2 L 94,-2 L 56,40 Q 50,46 44,40 Z"
+                  fill="url(#originalPaperTexture)"
+                />
+                <path
+                  d="M 6,-2 L 94,-2 L 56,40 Q 50,46 44,40 Z"
+                  fill="url(#creaseShadowTop)"
+                />
+              </g>
 
-            <div 
-              className={`absolute top-0 left-0 right-0 h-full origin-top transition-transform duration-700 ease-in-out ${
-                step >= 1 ? '[transform:rotateX(180deg)] z-0' : 'z-30'
+              {/* 2. SOLAPA INFERIOR (con sombreado profundo bajo los pliegues laterales) */}
+              <g style={{ filter: 'drop-shadow(0px -4px 4px rgba(0, 0, 0, 0.38))' }}>
+                <path
+                  d="M 6,102 L 94,102 L 56,59 Q 50,53 44,59 Z"
+                  fill="url(#originalPaperTexture)"
+                />
+                <path
+                  d="M 6,102 L 94,102 L 56,59 Q 50,53 44,59 Z"
+                  fill="url(#creaseShadowBottom)"
+                />
+              </g>
+
+			{/* SOMBRA EXCLUSIVA EN LA DIAGONAL INFERIOR DE LA SOLAPA DERECHA */}
+              <line
+                x1="46"
+                y1="56.5"
+                x2="88"
+                y2="102.5"
+                stroke="#000000"
+                strokeWidth="1.6"
+                strokeOpacity="0.48"
+                filter="url(#bottomRightEdgeShadow)"
+              />
+
+              {/* 3. SOLAPA DERECHA (BISELADO SOLO ARRIBA, SIN BISEL ABAJO) */}
+              <g>
+                <path
+                  d="M 102,-2 L 88,-2 L 47,45 Q 39,51 47,57 L 88,102 L 102,102 Z"
+                  fill="url(#originalPaperTexture)"
+                />
+                <path
+                  d="M 102,-2 L 88,-2 L 47,45 Q 39,51 47,57 L 88,102 L 102,102 Z"
+                  fill="url(#creaseShadowRight)"
+                />
+                {/* BISELADO CLARO ÚNICAMENTE EN LA MITAD SUPERIOR */}
+                <path
+                  d="M 88,-2 L 47,45 Q 43,48 43,51"
+                  fill="none"
+                  stroke="rgba(255, 245, 230, 0.25)"
+                  strokeWidth="0.45"
+                  strokeLinecap="round"
+                />
+              </g>
+            </svg>
+            {/* 4. SOLAPA IZQUIERDA PRINCIPAL (DOBLE SOMBRA REALISTA HACIA ABAJO Y DERECHA) */}
+            <div
+              className={`absolute inset-0 w-full h-full origin-left transition-transform duration-1000 ease-in-out ${
+                step >= 1 ? '[transform:rotateY(-150deg)] z-30' : 'z-30'
               }`}
             >
-              <svg className="w-full h-full filter drop-shadow-2xl [filter:url(#paperTexture)]" preserveAspectRatio="none" viewBox="0 0 100 100">
+              <svg
+                className="w-full h-full"
+                preserveAspectRatio="none"
+                viewBox="0 0 100 100"
+              >
                 <defs>
-                  <linearGradient id="topFlapGrad" x1="50%" y1="0%" x2="50%" y2="100%">
-                    <stop offset="0%" stopColor="#78242D" />
-                    <stop offset="100%" stopColor="#4A1217" />
+                  <pattern
+                    id="originalPaperTextureLeft"
+                    patternUnits="userSpaceOnUse"
+                    width="100"
+                    height="100"
+                  >
+                    <image
+                      href="/texturasobre.jpg"
+                      x="0"
+                      y="0"
+                      width="100"
+                      height="100"
+                      preserveAspectRatio="xMidYMid slice"
+                    />
+                  </pattern>
+
+                  <linearGradient id="creaseShadowLeft" x1="0%" y1="50%" x2="70%" y2="50%">
+                    <stop offset="0%" stopColor="#000000" stopOpacity="0.0" />
+                    <stop offset="85%" stopColor="#000000" stopOpacity="0.05" />
+                    <stop offset="100%" stopColor="#000000" stopOpacity="0.14" />
                   </linearGradient>
                 </defs>
 
-                <polygon 
-                  points="0,0 100,0 50,58" 
-                  fill={step >= 1 ? "#1F0507" : "url(#topFlapGrad)"} 
-                />
+               <g
+                  style={{
+                    filter: 'drop-shadow(1.5px 1.5px 1.2px rgba(0, 0, 0, 0.90))'
+                  }}
+                >
+                  <path
+                    d="M -2,-2 L 12,-2 L 62,46 Q 71,53 62,60 L 12,102 L -2,102 Z"
+                    fill="url(#originalPaperTextureLeft)"
+                    stroke="rgba(255, 245, 230, 0.35)"
+                    strokeWidth="0.35"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M -2,-2 L 12,-2 L 62,46 Q 71,53 62,60 L 12,102 L -2,102 Z"
+                    fill="url(#creaseShadowLeft)"
+                  />
+                </g>
               </svg>
             </div>
 
-            {/* SELLO DE LACRE */}
-            <div 
+            {/* MÁSCARA DE SILUETA ORGÁNICA PARA EL SELLO OFICIAL */}
+            <svg className="hidden" width="0" height="0">
+              <defs>
+                <clipPath id="officialWaxSealMask" clipPathUnits="objectBoundingBox">
+                  <path d="M 0.50,0.095 C 0.64,0.095 0.76,0.14 0.85,0.23 C 0.94,0.32 0.985,0.44 0.985,0.56 C 0.985,0.63 0.95,0.68 0.87,0.71 C 0.85,0.82 0.79,0.92 0.68,0.96 C 0.57,0.995 0.42,0.99 0.32,0.94 C 0.28,0.92 0.27,0.90 0.24,0.90 C 0.16,0.90 0.08,0.81 0.04,0.68 C 0.01,0.56 0.015,0.42 0.06,0.31 C 0.12,0.19 0.23,0.12 0.36,0.10 C 0.41,0.095 0.46,0.095 0.50,0.095 Z" />
+                </clipPath>
+              </defs>
+            </svg>
+
+            {/* SELLO OFICIAL J&C + BOTÓN "VER INVITACIÓN" */}
+            <div
               onClick={handleOpenEnvelope}
-              className={`absolute top-[55%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-40 flex flex-col items-center cursor-pointer group transition-all duration-500 ${
-                step >= 1 ? 'scale-0 opacity-0 pointer-events-none' : 'hover:scale-110 active:scale-95'
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === 'Enter' && handleOpenEnvelope()}
+              aria-label="Abrir invitación de boda"
+              className={`absolute top-[53%] left-[63%] -translate-x-1/2 -translate-y-1/2 z-40 flex flex-col items-center cursor-pointer group transition-all duration-300 ${
+                step >= 1
+                  ? 'scale-0 opacity-0 pointer-events-none'
+                  : 'hover:scale-105 active:scale-95'
               }`}
             >
-              <div className="relative w-22 h-22 sm:w-28 sm:h-28 rounded-full bg-gradient-to-tr from-[#8B6E32] via-[#E8C87A] to-[#A08038] shadow-[0_15px_30px_rgba(0,0,0,0.6),inset_0_2px_4px_rgba(255,255,255,0.6)] border-2 border-[#FFEBB3]/60 flex items-center justify-center transform group-hover:rotate-6 transition-transform">
-                <div className="absolute inset-1.5 rounded-full border border-amber-950/40 bg-[#C09F4E]/40 backdrop-blur-[1px] flex items-center justify-center">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-amber-900/50 flex flex-col items-center justify-center bg-gradient-to-br from-[#D8B660] to-[#927330] shadow-inner">
-                    <span className="font-serif font-extrabold text-amber-950 text-base sm:text-xl tracking-tighter drop-shadow-sm">J | C</span>
-                    <span className="text-[8px] font-sans text-amber-950/80 uppercase tracking-widest font-bold mt-0.5">24.04</span>
-                  </div>
-                </div>
-                <div className="absolute top-2 left-4 w-6 h-3 bg-white/30 rounded-full blur-[2px] transform -rotate-45" />
+              <div
+                className="relative w-28 h-28 sm:w-36 sm:h-36 flex items-center justify-center transform group-hover:rotate-3 transition-transform duration-300"
+                style={{
+                  filter: 'drop-shadow(0px 10px 14px rgba(0, 0, 0, 0.52)) drop-shadow(0px 3px 5px rgba(0, 0, 0, 0.35))'
+                }}
+              >
+                <img
+                  src="/SelloCeraOficial.png"
+                  alt="Sello de lacre J&C"
+                  className="w-full h-full object-contain select-none"
+                  style={{
+                    clipPath: 'url(#officialWaxSealMask)',
+                    WebkitClipPath: 'url(#officialWaxSealMask)'
+                  }}
+                />
               </div>
 
-              <div className="mt-5 bg-black/30 backdrop-blur-md px-5 py-2 rounded-full border border-white/20 whitespace-nowrap shadow-xl">
-                <p className="text-xs font-serif uppercase tracking-[0.25em] text-[#FFE8A3] font-bold animate-pulse">
-                  Toca el sello para abrir
-                </p>
-              </div>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleOpenEnvelope();
+                }}
+                className="mt-2.5 -ml-8 sm:-ml-10 px-6 py-2.5 rounded-full bg-[#5C1A1B]/90 hover:bg-[#451213] backdrop-blur-sm border border-[#D4AF6A]/75 shadow-[0_6px_16px_rgba(0,0,0,0.4)] transition-all duration-300 group-hover:border-[#FFE8A3] whitespace-nowrap"
+              >
+                <span className="text-[11px] sm:text-xs font-serif uppercase tracking-[0.22em] text-[#F9EEDB] font-medium">
+                  VER INVITACIÓN
+                </span>
+              </button>
             </div>
 
           </div>
         </div>
       )}
+	  
+	  
 
       {/* CONTENIDO PRINCIPAL DE LA BODA */}
-      <div className={`transition-all duration-1000 ${step === 2 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+      <div className={`relative transition-opacity duration-500 ${step >= 1 ? 'opacity-100' : 'opacity-0'}`}>
+{/* TEXTURA REAL DE PAPEL CARTA (SIN CORTES AL HACER SCROLL EN MÓVIL) */}
+        <div
+          className="pointer-events-none fixed top-0 left-0 w-screen h-[120lvh] z-0 opacity-15 mix-blend-multiply transform-gpu will-change-transform"
+          style={{
+            backgroundImage: "url('/texturacarta.png')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center top',
+            backgroundRepeat: 'no-repeat'
+          }}
+        />
+
         <button 
           onClick={toggleAudio} 
           className="fixed bottom-6 right-6 z-50 bg-[#7998B5] text-white p-3.5 rounded-full shadow-xl hover:bg-[#63809C] transition-all flex items-center gap-2"
@@ -293,88 +398,120 @@ export default function App() {
           {isPlaying ? <Volume2 className="w-5 h-5 animate-pulse" /> : <VolumeX className="w-5 h-5" />}
         </button>
 
-        {/* HEADER */}
-        <header className="relative min-h-screen flex flex-col justify-center items-center text-center p-4 sm:p-6 bg-gradient-to-b from-[#E8A3B0]/20 via-[#F9F7F5] to-[#788E75]/10">
-          <RevealOnScroll delay={100}>
-            <p className="text-[#B64A4A] font-sans tracking-widest uppercase text-xs sm:text-sm font-semibold">¡Nos Casamos!</p>
-          </RevealOnScroll>
-          
-          <RevealOnScroll delay={250}>
-            <h1 className="text-6xl sm:text-7xl md:text-8xl font-autography text-[#6B2028] mt-3 mb-1 leading-tight tracking-tight px-2">
-              Javier <span className="font-sans text-3xl sm:text-4xl text-[#E28351]">&</span> Cristina
-            </h1>
-          </RevealOnScroll>
+        {/* HEADER CON FOTO DE FONDO INTEGRADA EN EL PAPEL */}
+          <header className="relative min-h-screen flex flex-col justify-center items-center text-center p-4 sm:p-6 overflow-hidden">
+            
+            {/* CAPA DE FOTO DE FONDO (CON TRANSPARENCIA, RECORTADA SIN BORDES NEGROS Y FUNDIDA CON EL PAPEL) */}
+            <div
+              className="pointer-events-none absolute inset-0 z-0 opacity-40 mix-blend-multiply scale-110"
+              style={{
+                backgroundImage: "url('/FotoFondoSec1.jpg')",
+                backgroundSize: 'cover',
+                backgroundPosition: '55% center',
+                backgroundRepeat: 'no-repeat',
+                WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 65%, rgba(0,0,0,0) 100%)',
+                maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 65%, rgba(0,0,0,0) 100%)'
+              }}
+            />
 
-          <RevealOnScroll delay={320}>
-            <div className="w-64 sm:w-94 md:w-94 mx-auto my-2">
-              <img 
-                src="/iconopersonas.png" 
-                alt="Ilustración Javier y Cristina" 
-                className="w-full h-auto object-contain drop-shadow-md hover:scale-105 transition-transform duration-500" 
-              />
-            </div>
-          </RevealOnScroll>
+            {/* VELO DE COLOR SUAVE PARA REALZAR LA LEGIBILIDAD DE LOS TEXTOS */}
+            <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-[#E8A3B0]/20 via-[#F8F6F0]/45 to-transparent" />
 
-          <RevealOnScroll delay={400}>
-            <p className="text-lg sm:text-xl text-[#6B6461] font-light italic max-w-lg px-2 mt-2">"Compartir este día con vosotros lo hace mágico."</p>
-          </RevealOnScroll>
-          
-          <RevealOnScroll delay={550}>
-            <div className="pt-6 flex flex-col sm:flex-row gap-4 font-sans text-[#4A4543] items-center justify-center">
-              <div className="flex items-center justify-center gap-2 bg-white px-5 py-2.5 rounded-full border border-[#D1C3B3] shadow-sm">
-                <Calendar className="w-5 h-5 text-[#B64A4A]" />
-                <span>24 de Abril de 2027</span>
-              </div>
+            {/* CONTENIDO DEL HEADER POR ENCIMA DEL FONDO */}
+            <div className="relative z-20 flex flex-col items-center">
+              <RevealOnScroll delay={100}>
+                <p className="text-[#B64A4A] font-sans tracking-widest uppercase text-xs sm:text-sm font-semibold">¡Nos Casamos!</p>
+              </RevealOnScroll>
               
-              <div className="flex items-center justify-center gap-2 bg-white px-5 py-2.5 rounded-full border border-[#D1C3B3] shadow-sm">
-                <MapPin className="w-5 h-5 text-[#7998B5]" />
-                <span>Finca Un Agua</span>
-              </div>
+              <RevealOnScroll delay={250}>
+                <h1 className="text-6xl sm:text-7xl md:text-8xl font-autography text-[#6B2028] mt-3 mb-1 leading-tight tracking-tight px-2">
+                  Javier <span className="font-sans text-3xl sm:text-4xl text-[#E28351]">&</span> Cristina
+                </h1>
+              </RevealOnScroll>
+			  
+			  {/*ESTA COMENTADO EL ICONO DE LOS DOS */}
 
-              <a
-                href={googleCalendarUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 bg-[#6B2028] hover:bg-[#52171D] text-[#FFFDF9] px-5 py-2.5 rounded-full border border-[#6B2028] shadow-sm transition-all text-sm font-semibold group"
-              >
-                <Calendar className="w-4 h-4 text-[#FFE8A3] group-hover:scale-110 transition-transform" />
-                <span>Añadir a Google Calendar</span>
-              </a>
-            </div>
-          </RevealOnScroll>
+			  {/* <RevealOnScroll delay={320}>
+                <div className="w-64 sm:w-94 md:w-94 mx-auto my-2">
+                  <img 
+                    src="/iconopersonas.png" 
+                    alt="Ilustración Javier y Cristina" 
+                    className="w-full h-auto object-contain drop-shadow-md hover:scale-105 transition-transform duration-500" 
+                  />
+                </div>
+              </RevealOnScroll> */}
 
-          <RevealOnScroll delay={700}>
-            <div className="pt-8 flex items-center justify-center gap-3 sm:gap-6 font-sans max-w-lg mx-auto px-2">
-              {Object.entries(timeLeft).map(([unit, value], idx) => (
-                <React.Fragment key={unit}>
-                  <div className="flex flex-col items-center justify-center group">
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/70 backdrop-blur-md border border-[#B64A4A]/25 shadow-sm flex items-center justify-center transition-transform duration-300 group-hover:scale-105 group-hover:border-[#B64A4A]">
-                      <span className="text-2xl sm:text-3xl font-serif font-bold text-[#6B2028] tracking-tight">
-                        {String(value).padStart(2, '0')}
-                      </span>
-                    </div>
-                    <span className="mt-2 text-[10px] sm:text-xs font-serif uppercase tracking-[0.2em] text-[#788E75] font-semibold">
-                      {unit}
-                    </span>
+              <RevealOnScroll delay={400}>
+                <p className="text-lg sm:text-xl text-[#4A4543] font-medium italic max-w-lg px-2 mt-2">"Vuestra presencia es el mejor regalo en el día más importante de nuestras vidas."</p>
+              </RevealOnScroll>
+              
+              <RevealOnScroll delay={550}>
+                <div className="pt-6 flex flex-col sm:flex-row gap-4 font-sans text-[#4A4543] items-center justify-center">
+                  <div className="flex items-center justify-center gap-2 bg-white/90 backdrop-blur-sm px-5 py-2.5 rounded-full border border-[#D1C3B3] shadow-sm">
+                    <Calendar className="w-5 h-5 text-[#B64A4A]" />
+                    <span>24 de Abril de 2027</span>
+                  </div>
+                  
+                  <div className="flex items-center justify-center gap-2 bg-white/90 backdrop-blur-sm px-5 py-2.5 rounded-full border border-[#D1C3B3] shadow-sm">
+                    <MapPin className="w-5 h-5 text-[#7998B5]" />
+                    <span>Finca Un Agua</span>
                   </div>
 
-                  {idx < 3 && (
-                    <span className="text-[#B64A4A]/40 text-xl font-serif font-light -mt-6">
-                      :
-                    </span>
-                  )}
-                </React.Fragment>
-              ))}
+                  <a
+                    href={googleCalendarUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 bg-[#6B2028] hover:bg-[#52171D] text-[#FFFDF9] px-5 py-2.5 rounded-full border border-[#6B2028] shadow-sm transition-all text-sm font-semibold group"
+                  >
+                    <Calendar className="w-4 h-4 text-[#FFE8A3] group-hover:scale-110 transition-transform" />
+                    <span>Añadir a Google Calendar</span>
+                  </a>
+                </div>
+              </RevealOnScroll>
+
+              <RevealOnScroll delay={700}>
+                <div className="pt-8 flex items-center justify-center gap-3 sm:gap-6 font-sans max-w-lg mx-auto px-2">
+                  {Object.entries(timeLeft).map(([unit, value], idx) => (
+                    <React.Fragment key={unit}>
+                      <div className="flex flex-col items-center justify-center group">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/85 backdrop-blur-md border border-[#B64A4A]/25 shadow-sm flex items-center justify-center transition-transform duration-300 group-hover:scale-105 group-hover:border-[#B64A4A]">
+                          <span className="text-2xl sm:text-3xl font-serif font-bold text-[#6B2028] tracking-tight">
+                            {String(value).padStart(2, '0')}
+                          </span>
+                        </div>
+                        <span className="mt-2 text-[10px] sm:text-xs font-serif uppercase tracking-[0.2em] text-[#788E75] font-semibold">
+                          {unit}
+                        </span>
+                      </div>
+
+                      {idx < 3 && (
+                        <span className="text-[#B64A4A]/40 text-xl font-serif font-light -mt-6">
+                          :
+                        </span>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </div>
+              </RevealOnScroll>
             </div>
-          </RevealOnScroll>
-        </header>
+         {/* FLECHA ANIMADA DE DESLIZAR HACIA ABAJO */}
+            <button
+              type="button"
+              onClick={() => {
+                document.getElementById('itinerario')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              aria-label="Deslizar hacia abajo"
+              className="absolute bottom-5 left-1/2 -translate-x-1/2 z-20 p-2 text-[#6B2028]/80 hover:text-[#6B2028] transition-colors cursor-pointer animate-bounce"
+            >
+              <ChevronDown className="w-8 h-8 stroke-[2.8]" />
+            </button>
+          </header>
 
         {/* ITINERARIO */}
-        <section className="py-20 px-4 sm:px-6 max-w-2xl mx-auto">
+        <section id="itinerario" className="py-20 px-4 sm:px-6 max-w-2xl mx-auto">
           <RevealOnScroll>
             <div className="text-center mb-16">
               <Sparkles className="w-6 h-6 text-[#E28351] mx-auto mb-2 opacity-80" />
-              <span className="text-[#B64A4A] font-sans text-xs uppercase tracking-[0.25em] font-semibold block mb-2">EL PROGRAMA</span>
               <h2 className="text-5xl sm:text-6xl font-autography text-[#2E2B2A] py-1">El gran día...</h2>
               <div className="w-16 h-0.5 bg-[#E8A3B0] mx-auto mt-4"></div>
             </div>
@@ -434,7 +571,6 @@ export default function App() {
             </div>
           </RevealOnScroll>
 
-          {/* GRID PARALELO DE 2 COLUMNAS EN PANTALLAS SM/MD EN ADELANTE */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 sm:gap-12 lg:gap-16 items-start">
             {storyTimeline.map((item, index) => (
               <RevealOnScroll key={index} delay={(index % 2) * 150}>
@@ -491,73 +627,6 @@ export default function App() {
             </div>
           </div>
         )}
-
-        {/* MENÚ */}
-        <section className="py-20 px-4 max-w-4xl mx-auto text-center">
-          <RevealOnScroll>
-            <Utensils className="w-8 h-8 text-[#9e4a47] mx-auto mb-3" />
-            <h2 className="text-5xl sm:text-6xl font-autography text-[#2E2B2A] py-1">Menú del Banquete</h2>
-            <div className="w-16 h-0.5 bg-[#E28351] mx-auto mt-4 mb-12"></div>
-          </RevealOnScroll>
-
-          <RevealOnScroll delay={150}>
-            <div className="relative bg-radial from-[#f4edd6] via-[#eae5dc] to-[#d8d0c4] p-4 sm:p-10 rounded-3xl sm:rounded-full shadow-2xl flex justify-center items-center max-w-2xl mx-auto border border-stone-300">
-              <div 
-                className="relative w-full max-w-[440px] min-h-[620px] bg-cover bg-center bg-no-repeat p-6 sm:p-10 shadow-2xl rounded-sm flex flex-col justify-between text-center border border-amber-950/10"
-                style={{ backgroundImage: "url('/FondoMinuta.png')", backgroundColor: "#FFFDF9" }}
-              >
-                <div>
-                  <h3 className="font-autography text-6xl sm:text-7xl text-[#9e4a47] font-normal mb-6">Menú</h3>
-                </div>
-
-                <div className="space-y-5 font-serif text-[#3a3532]">
-                  <div>
-                    <h4 className="font-sans text-[10px] sm:text-[11px] tracking-[3px] uppercase text-[#3a3532] font-semibold mb-1">SORBETE</h4>
-                    <p className="text-base font-semibold text-[#3a3532]">Sorbete de Mandarina</p>
-                  </div>
-
-                  <div>
-                    <h4 className="font-sans text-[10px] sm:text-[11px] tracking-[3px] uppercase text-[#3a3532] font-semibold mb-1">PLATO PRINCIPAL</h4>
-                    <p className="text-base font-semibold text-[#3a3532]">Carrillada ibérica</p>
-                    <p className="text-xs italic text-[#635d58] mb-2">Con puré de manzana y salsa de ciruela al vino</p>
-                    <p className="text-base font-semibold text-[#3a3532]">Cordero lechal asado</p>
-                    <p className="text-xs italic text-[#635d58]">Con patatas panaderas</p>
-                  </div>
-
-                  <div>
-                    <h4 className="font-sans text-[10px] sm:text-[11px] tracking-[3px] uppercase text-[#3a3532] font-semibold mb-1">POSTRE</h4>
-                    <p className="text-base font-semibold text-[#3a3532]">Torrija de pan brioche</p>
-                    <p className="text-xs italic text-[#635d58] mb-2">Con crema y bola de helado</p>
-                    <p className="text-base font-semibold text-[#3a3532]">Tarta de queso manchego cremosa</p>
-                  </div>
-
-                  <div>
-                    <h4 className="font-sans text-[10px] sm:text-[11px] tracking-[3px] uppercase text-[#3a3532] font-semibold mb-1">BODEGA</h4>
-                    <p className="text-sm font-semibold text-[#3a3532]">Vino Tinto Rioja Cune Crianza</p>
-                    <p className="text-sm font-semibold text-[#3a3532] mt-0.5">Vino Blanco Cune Rioja Semidulce y Rueda Verdejo</p>
-                    <p className="text-sm font-semibold text-[#3a3532] mt-0.5">Cava brut</p>
-                  </div>
-                </div>
-
-                <div className="mt-6">
-                  <p className="text-[11px] italic text-[#78716a] font-serif">Por favor, consulte sobre opciones vegetarianas o alérgenos.</p>
-                </div>
-              </div>
-            </div>
-          </RevealOnScroll>
-
-          <RevealOnScroll delay={250}>
-            <div className="mt-8">
-              <button 
-                onClick={() => window.print()} 
-                className="bg-[#6e806d] text-white px-8 py-3 rounded-full font-sans text-xs tracking-widest uppercase hover:bg-[#9e4a47] transition-all flex items-center gap-2 mx-auto shadow-md"
-              >
-                <Printer className="w-4 h-4" />
-                Imprimir / Guardar en PDF
-              </button>
-            </div>
-          </RevealOnScroll>
-        </section>
 
         {/* SECCIÓN DE MÚSICA CON SPOTIFY Y GOOGLE FORMS */}
         <section 
@@ -660,24 +729,98 @@ export default function App() {
           </div>
         </section>
 
-        {/* INFORMACIÓN DE INTERÉS (DESPLEGABLES) */}
+        {/* INFORMACIÓN DE INTERÉS (DESPLEGABLES: MENÚ, HOTELES, AUTOBUSES, PARKING) */}
         <section className="py-20 px-4 sm:px-6 max-w-3xl mx-auto">
           <RevealOnScroll>
             <div className="text-center mb-12">
               <Info className="w-8 h-8 text-[#7998B5] mx-auto mb-3" />
               <h2 className="text-5xl sm:text-6xl font-autography text-[#2E2B2A] py-1">Información de Interés</h2>
-              <p className="text-[#6B6461] font-sans text-sm mt-2">Detalles útiles para facilitar tu asistencia y estancia en nuestra boda</p>
+              <p className="text-[#6B6461] font-sans text-sm mt-2">Detalles útiles sobre el menú, alojamiento y transporte para nuestra boda</p>
               <div className="w-16 h-0.5 bg-[#7998B5] mx-auto mt-4"></div>
             </div>
           </RevealOnScroll>
 
           <RevealOnScroll delay={150}>
             <div className="space-y-4 font-sans">
+
+              {/* DESPLEGABLE 0: MENÚ DEL BANQUETE */}
+              <div className="bg-white rounded-2xl border border-[#D1C3B3] shadow-sm overflow-hidden transition-all">
+                <button 
+                  onClick={() => toggleAccordion(0)}
+                  className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-[#F8F6F0]/50 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-[#9e4a47]/10 rounded-xl text-[#9e4a47]">
+                      <Utensils className="w-5 h-5" />
+                    </div>
+                    <span className="font-serif font-semibold text-[#2E2B2A] text-base sm:text-lg">Menú del Banquete</span>
+                  </div>
+                  <ChevronDown className={`w-5 h-5 text-[#8C827A] transition-transform duration-300 ${activeAccordion === 0 ? 'rotate-180' : ''}`} />
+                </button>
+
+                {activeAccordion === 0 && (
+                  <div className="px-4 sm:px-6 pb-8 pt-4 border-t border-[#D1C3B3]/40 text-center">
+                    <div className="relative bg-radial from-[#f4edd6] via-[#eae5dc] to-[#d8d0c4] p-4 sm:p-8 rounded-3xl shadow-inner flex justify-center items-center max-w-xl mx-auto border border-stone-300">
+                      <div 
+                        className="relative w-full max-w-[420px] min-h-[580px] bg-cover bg-center bg-no-repeat p-6 sm:p-8 shadow-xl rounded-sm flex flex-col justify-between text-center border border-amber-950/10"
+                        style={{ backgroundImage: "url('/FondoMinuta.png')", backgroundColor: "#FFFDF9" }}
+                      >
+                        <div>
+                          <h3 className="font-autography text-5xl sm:text-6xl text-[#9e4a47] font-normal mb-5">Menú</h3>
+                        </div>
+
+                        <div className="space-y-4 font-serif text-[#3a3532]">
+                          <div>
+                            <h4 className="font-sans text-[10px] sm:text-[11px] tracking-[3px] uppercase text-[#3a3532] font-semibold mb-1">SORBETE</h4>
+                            <p className="text-base font-semibold text-[#3a3532]">Sorbete de Mandarina</p>
+                          </div>
+
+                          <div>
+                            <h4 className="font-sans text-[10px] sm:text-[11px] tracking-[3px] uppercase text-[#3a3532] font-semibold mb-1">PLATO PRINCIPAL</h4>
+                            <p className="text-base font-semibold text-[#3a3532]">Carrillada ibérica</p>
+                            <p className="text-xs italic text-[#635d58] mb-2">Con puré de manzana y salsa de ciruela al vino</p>
+                            <p className="text-base font-semibold text-[#3a3532]">Cordero lechal asado</p>
+                            <p className="text-xs italic text-[#635d58]">Con patatas panaderas</p>
+                          </div>
+
+                          <div>
+                            <h4 className="font-sans text-[10px] sm:text-[11px] tracking-[3px] uppercase text-[#3a3532] font-semibold mb-1">POSTRE</h4>
+                            <p className="text-base font-semibold text-[#3a3532]">Torrija de pan brioche</p>
+                            <p className="text-xs italic text-[#635d58] mb-2">Con crema y bola de helado</p>
+                            <p className="text-base font-semibold text-[#3a3532]">Tarta de queso manchego cremosa</p>
+                          </div>
+
+                          <div>
+                            <h4 className="font-sans text-[10px] sm:text-[11px] tracking-[3px] uppercase text-[#3a3532] font-semibold mb-1">BODEGA</h4>
+                            <p className="text-sm font-semibold text-[#3a3532]">Vino Tinto Rioja Cune Crianza</p>
+                            <p className="text-sm font-semibold text-[#3a3532] mt-0.5">Vino Blanco Cune Rioja Semidulce y Rueda Verdejo</p>
+                            <p className="text-sm font-semibold text-[#3a3532] mt-0.5">Cava brut</p>
+                          </div>
+                        </div>
+
+                        <div className="mt-5">
+                          <p className="text-[11px] italic text-[#78716a] font-serif">Por favor, consulte sobre opciones vegetarianas o alérgenos en el formulario de asistencia.</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-6">
+                      <button 
+                        onClick={() => window.print()} 
+                        className="bg-[#6e806d] text-white px-6 py-2.5 rounded-full font-sans text-xs tracking-widest uppercase hover:bg-[#9e4a47] transition-all inline-flex items-center gap-2 shadow-sm"
+                      >
+                        <Printer className="w-4 h-4" />
+                        Imprimir / Guardar en PDF
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
               
               {/* DESPLEGABLE 1: HOTELES Y ALOJAMIENTOS */}
               <div className="bg-white rounded-2xl border border-[#D1C3B3] shadow-sm overflow-hidden transition-all">
                 <button 
-                  onClick={() => toggleAccordion(0)}
+                  onClick={() => toggleAccordion(1)}
                   className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-[#F8F6F0]/50 transition-colors"
                 >
                   <div className="flex items-center gap-3">
@@ -686,10 +829,10 @@ export default function App() {
                     </div>
                     <span className="font-serif font-semibold text-[#2E2B2A] text-base sm:text-lg">Hoteles y Alojamientos Cercanos</span>
                   </div>
-                  <ChevronDown className={`w-5 h-5 text-[#8C827A] transition-transform duration-300 ${activeAccordion === 0 ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-5 h-5 text-[#8C827A] transition-transform duration-300 ${activeAccordion === 1 ? 'rotate-180' : ''}`} />
                 </button>
 
-                {activeAccordion === 0 && (
+                {activeAccordion === 1 && (
                   <div className="px-6 pb-6 pt-2 text-sm text-[#6B6461] border-t border-[#D1C3B3]/40 space-y-5">
                     <p className="italic">Os dejamos las mejores opciones de alojamiento organizadas por cercanía a la finca con su ubicación directa en Google Maps:</p>
                     
@@ -809,7 +952,7 @@ export default function App() {
               {/* DESPLEGABLE 2: AUTOBUSES */}
               <div className="bg-white rounded-2xl border border-[#D1C3B3] shadow-sm overflow-hidden transition-all">
                 <button 
-                  onClick={() => toggleAccordion(1)}
+                  onClick={() => toggleAccordion(2)}
                   className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-[#F8F6F0]/50 transition-colors"
                 >
                   <div className="flex items-center gap-3">
@@ -818,12 +961,12 @@ export default function App() {
                     </div>
                     <span className="font-serif font-semibold text-[#2E2B2A] text-base sm:text-lg">Servicio de Autobuses y Horarios</span>
                   </div>
-                  <ChevronDown className={`w-5 h-5 text-[#8C827A] transition-transform duration-300 ${activeAccordion === 1 ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-5 h-5 text-[#8C827A] transition-transform duration-300 ${activeAccordion === 2 ? 'rotate-180' : ''}`} />
                 </button>
 
-                {activeAccordion === 1 && (
+                {activeAccordion === 2 && (
                   <div className="px-6 pb-6 pt-2 text-sm text-[#6B6461] border-t border-[#D1C3B3]/40 space-y-4">
-                    <p>Disponpondremos de servicio de autobús gratuito de ida y vuelta para todos los invitados:</p>
+                    <p>Dispondremos de servicio de autobús gratuito de ida y vuelta para todos los invitados:</p>
                     
                     <div className="space-y-3">
                       <div className="border-l-2 border-[#B64A4A] pl-3 py-1">
@@ -844,7 +987,7 @@ export default function App() {
               {/* DESPLEGABLE 3: PARKING */}
               <div className="bg-white rounded-2xl border border-[#D1C3B3] shadow-sm overflow-hidden transition-all">
                 <button 
-                  onClick={() => toggleAccordion(2)}
+                  onClick={() => toggleAccordion(3)}
                   className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-[#F8F6F0]/50 transition-colors"
                 >
                   <div className="flex items-center gap-3">
@@ -853,10 +996,10 @@ export default function App() {
                     </div>
                     <span className="font-serif font-semibold text-[#2E2B2A] text-base sm:text-lg">Aparcamiento / Parking</span>
                   </div>
-                  <ChevronDown className={`w-5 h-5 text-[#8C827A] transition-transform duration-300 ${activeAccordion === 2 ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-5 h-5 text-[#8C827A] transition-transform duration-300 ${activeAccordion === 3 ? 'rotate-180' : ''}`} />
                 </button>
 
-                {activeAccordion === 2 && (
+                {activeAccordion === 3 && (
                   <div className="px-6 pb-6 pt-2 text-sm text-[#6B6461] border-t border-[#D1C3B3]/40 space-y-2">
                     <p className="font-semibold text-[#2E2B2A]">¡Sí, la finca dispone de amplio parking privado gratuito!</p>
                     <p>Si decides asistir en tu vehículo privado, encontrarás aparcamiento vigilado dentro de las instalaciones de Finca Un Agua sin necesidad de reserva previa.</p>
